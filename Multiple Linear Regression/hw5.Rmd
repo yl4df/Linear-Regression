@@ -1,0 +1,119 @@
+---
+title: "STAT5120: Homework 5" 
+author: "Yunlu Li"
+fontsize: 12pt
+geometry: margin=1in
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, highlight=FALSE)
+
+```
+
+## Problem 1
+### (a)
+```{r}
+setwd("/Users/yunluli/Desktop/stat5120/hw5")
+data <- read.table("Senic.txt", header=TRUE ,sep="")
+attach(data)
+result<-lm(InfctRsk~Stay+Cultures+Age+Census+Beds) 
+anova(result)
+```
+From the ANOVA table above, we have SSR($\beta_5$|$\beta_1$,$\beta_2$,$\beta_3$,$\beta_4$)=0.028.
+
+### (b)
+```{r}
+```
+The increment in the variability of InfctRsk that is explained by the predictors, by adding Beds to an existing set of four predictors (Stay, Cultures, Age, Census), is 0.028.
+
+### (c)
+```{r}
+summary(result)
+```
+Age, Census, Beds appear to be not significant based on t-statistics above. 
+
+### (d)
+```{r}
+reduced<-lm(InfctRsk~Stay+Cultures)
+anova(reduced,result)
+```
+$H_0: \beta_3=\beta_4=\beta_5=0$.
+$H_a:$ at least one of $\beta_3, \beta_4, \beta_5$ is non zero.
+The F statistic is 1.7812 and the p-value is 0.1551, so we cannot reject the null hypothesis. This means Age, Census, Beds can be dropped from the model. 
+
+### (e)
+```{r}
+summary(reduced)
+```
+The estimated regression equation is $\hat y= 0.805491+0.275472x_1+0.056451x_2$.
+
+## Problem 2
+### (a)
+```{r}
+library(faraway) 
+data(seatpos)
+attach(seatpos)
+result<-lm(hipcenter~., data=seatpos) 
+summary(result)
+```
+The p-value associated with F statistic is very small. However, individual t-statistic indicates that none of predicators is significant given the presence of other predicators. R^2 is 0.6866.
+
+### (b)
+The samll p-value associated with F statistic suggests that the response is significantly linearly related to
+at least one of the predictors, but individual t-statistic indicates that none of predicators is significant given the presence of other predicators. This shows the sign of multicollinearity.
+
+###(c)
+```{r}
+round(cor(seatpos),3)
+```
+Some pairs of predicators show strong pairwise correlation. 
+
+### (d)
+```{r}
+vif(result)
+```
+HtShoes and Ht have very high VIF, indicating that there is serious multicollinearity.
+
+### (e)
+```{r}
+round(cor(seatpos[,3:8]),3)
+```
+The six preddicators are highly correlated to each other.
+
+### (f)
+I would like to keep HtShoes, since it is most highly correlated to other predicators.
+
+### (g)
+```{r}
+reduced<-lm(hipcenter~Age+Weight+HtShoes) 
+vif(reduced)
+```
+Since the VIFs are less than 5, so multicollinearity is not a concern.
+
+### (h)
+```{r}
+anova(reduced,result)
+```
+$H_0: \beta_4=\beta_5=\beta_6=\beta_7=\beta_8=0$.
+$H_a:$ at least one of $\beta_4, \beta_5, \beta_6, \beta_7, \beta_8$ is non zero.
+The F statistic is 0.5863 and the p-value is 0.7103, so we cannot reject the null hypothesis. This means Ht, Seated, Arm, Thigh, and Leg can be dropped from the model. 
+
+### (i)
+```{r}
+plot(reduced$fitted.values,reduced$residuals,main="Residual Plot of Reduced Model")
+abline(h=0,col="red")
+acf(reduced$residuals, main="ACF of Reduced Model")
+```
+From the residual plot, the assumptions for the multiple regression model are satisfied. The residuals fall in a horizontal band around 0 with constant variance, and have no apparent pattern. The ACF plot indicates the residuals are uncorrelated. 
+
+### (j)
+```{r}
+reduced
+```
+$\hat y = 532.877125 + 0.557597x_1 - 0.008688x_2 - 4.178042x_3$
+
+
+
+
+
